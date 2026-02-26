@@ -1,0 +1,138 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Orders{% endblock %}
+
+{% block admin_content %}
+<div class="card shadow-lg border-0">
+    <div class="card-header bg-gradient-danger text-white py-4 d-flex justify-content-between align-items-center">
+        <h2 class="mb-0 fw-bold">
+            <i class="fas fa-shopping-cart me-3"></i>
+            All Orders ({{ orders|length }})
+        </h2>
+        <div>
+            <span class="badge bg-light text-dark fs-6 me-2">
+                {{ pending_count }} Pending
+            </span>
+            <span class="badge bg-success fs-6">
+                {{ confirmed_count }} Confirmed
+            </span>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Amount</th>
+                        <th>Delivery</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr class="{% if order.status == 'pending' %}table-warning{% elif order.status == 'confirmed' %}table-success{% endif %}">
+                        <td><strong>#{{ order.id }}</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ url_for('static', filename='uploads/' + order.user.profile_image) if order.user.profile_image and order.user.profile_image != 'default.jpg' else url_for('static', filename='uploads/default.jpg') }}" 
+                                     class="rounded-circle me-2" style="width: 35px; height: 35px; object-fit: cover;">
+                                <div>
+                                    <strong>{{ order.user.first_name }} {{ order.user.last_name }}</strong><br>
+                                    <small class="text-muted">{{ order.user.phone }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <strong>{{ order.product.name[:40] }}{% if order.product.name|length > 40 %}...{% endif %}</strong><br>
+                            <small class="text-muted">{{ order.product.category.name }}</small>
+                        </td>
+                        <td>
+                            <h6 class="fw-bold text-primary mb-0">Le {{ "%.0f"|format(order.product.price) }}</h6>
+                        </td>
+                        <td>
+                            <div>{{ order.delivery_date.strftime('%d/%m/%Y %H:%M') }}</div>
+                            <small class="badge bg-info">
+                                {{ (order.delivery_date - datetime.now()).days }} days
+                            </small>
+                        </td>
+                        <td>
+                            <small class="text-truncate d-block" style="max-width: 200px;" title="{{ order.delivery_location }}">
+                                {{ order.delivery_location }}
+                            </small>
+                        </td>
+                        <td>
+                            <span class="badge fs-6 px-3 py-2 fw-bold bg-{{ 'warning text-dark' if order.status == 'pending' else 'success' }}">
+                                {{ order.status.title() }}
+                            </span>
+                        </td>
+                        <td>{{ order.created_at.strftime('%d/%m %H:%M') }}</td>
+                        <td>
+                            {% if order.status == 'pending' %}
+                                <a href="{{ url_for('admin_confirm_order', order_id=order.id) }}" 
+                                   class="btn btn-sm btn-success me-1" 
+                                   onclick="return confirm('Confirm order #{{ order.id }}?')">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                            {% elif order.status == 'confirmed' %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle"></i> Confirmed
+                                </span>
+                            {% endif %}
+                            <a href="#" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" 
+                               data-bs-target="#orderModal{{ order.id }}">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+
+                    <!-- Order Details Modal -->
+                    <div class="modal fade" id="orderModal{{ order.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header bg-primary text-white">
+                                    <h5 class="modal-title">Order #{{ order.id }} Details</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6><i class="fas fa-user me-2 text-primary"></i>Customer</h6>
+                                            <p class="mb-1"><strong>{{ order.user.first_name }} {{ order.user.last_name }}</strong></p>
+                                            <p class="mb-1">{{ order.user.email }}</p>
+                                            <p class="mb-0">{{ order.user.phone }}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6><i class="fas fa-shopping-cart me-2 text-success"></i>Product</h6>
+                                            <p class="mb-1"><strong>{{ order.product.name }}</strong></p>
+                                            <p class="mb-1">Le {{ "%.0f"|format(order.product.price) }}</p>
+                                            <p class="mb-0">{{ order.product.category.name }}</p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6><i class="fas fa-map-marker-alt me-2 text-info"></i>Location</h6>
+                                            <p class="mb-0">{{ order.delivery_location }}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6><i class="fas fa-calendar-alt me-2 text-warning"></i>Delivery</h6>
+                                            <p class="mb-0">{{ order.delivery_date.strftime('%A, %d %B %Y at %H:%M') }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

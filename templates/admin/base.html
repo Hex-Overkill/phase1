@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ self.title() }} - Admin{% endblock %}
+
+{% block content %}
+<!-- Admin Sidebar -->
+<div class="row">
+    <div class="col-md-3 col-lg-2">
+        <div class="card shadow-sm sticky-top" style="top: 20px;">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-cogs me-2"></i>Admin Panel
+                </h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+                <a href="{{ url_for('admin_orders') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin_orders' %}active{% endif %}">
+    <i class="fas fa-shopping-cart me-2"></i>Orders
+</a>
+                <a href="{{ url_for('admin_users') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin_users' %}active{% endif %}">
+                    <i class="fas fa-users me-2"></i>Users ({{ users|length if users else 0 }})
+                </a>
+                <a href="{{ url_for('admin_products') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin_products' %}active{% endif %}">
+                    <i class="fas fa-boxes me-2"></i>Products
+                </a>
+                <a href="{{ url_for('admin_upload') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin_upload' %}active{% endif %}">
+                    <i class="fas fa-plus-circle me-2"></i>Upload Product
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Content -->
+    <div class="col-md-9 col-lg-10">
+        {% block admin_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Order {{ product.name }} - E-Shop{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg border-0 bg-dark text-white">
+            <div class="card-header bg-primary text-white text-center py-4">
+                <h2 class="mb-1 fw-bold">
+                    <i class="fas fa-shopping-cart me-3"></i>
+                    Place Order
+                </h2>
+                <p class="mb-0 opacity-75 text-white">{{ product.name }}</p>
+            </div>
+            <div class="card-body p-5">
+                <!-- Product Summary -->
+                <div class="row mb-5">
+                    <div class="col-md-4 text-center">
+                        {% if product.thumbnail %}
+                        <img src="{{ url_for('static', filename='uploads/' + product.thumbnail) }}" 
+                             class="img-fluid rounded shadow" style="max-height: 200px; object-fit: cover;" alt="{{ product.name }}">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <h4 class="fw-bold text-white mb-2">{{ product.name }}</h4>
+                        <h5 class="text-success fw-bold mb-3">Le {{ "%.0f"|format(product.price) }}</h5>
+                        <p class="text-white">{{ product.description }}</p>
+                        <span class="badge bg-info fs-6 text-dark">{{ product.category.name }}</span>
+                    </div>
+                </div>
+                
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold fs-5 text-white">
+                                <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                Delivery Date & Time
+                            </label>
+                            <input type="datetime-local" class="form-control form-control-lg bg-dark text-white border-primary" name="delivery_date" required>
+                            <div class="form-text text-white">Select when you want the product delivered</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold fs-5 text-white">
+                                <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                Delivery Location
+                            </label>
+                            <input type="text" class="form-control form-control-lg bg-dark text-white border-primary" name="location" 
+                                   placeholder="House number, Street, Area, City" required>
+                            <div class="form-text text-white">Be specific for accurate delivery</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-5">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm bg-dark text-white">
+                                <div class="card-body">
+                                    <h6 class="fw-bold text-white mb-2">
+                                        <i class="fas fa-user me-2 text-primary"></i>
+                                        Delivery To:
+                                    </h6>
+                                    <p class="mb-1"><strong>{{ current_user.first_name }} {{ current_user.last_name }}</strong></p>
+                                    <p class="mb-1">{{ current_user.email }}</p>
+                                    <p class="mb-0">{{ current_user.phone }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm bg-dark text-white">
+                                <div class="card-body text-center">
+                                    <h6 class="fw-bold text-success mb-2">
+                                        <i class="fas fa-credit-card me-2"></i>
+                                        Total Amount
+                                    </h6>
+                                    <h3 class="text-success mb-0">Le {{ "%.0f"|format(product.price) }}</h3>
+                                    <small class="text-white">Payment on delivery</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-success btn-lg fw-bold py-4 fs-4 text-white">
+                            <i class="fas fa-check-circle me-3"></i>
+                            Confirm & Place Order
+                        </button>
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" 
+                           class="btn btn-outline-secondary py-3 text-white">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Product
+                        </a>
+                    </div>
+                </form>
+                
+                <div class="alert  mt-4 text-white">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> Your order will be reviewed and confirmed by admin before processing.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

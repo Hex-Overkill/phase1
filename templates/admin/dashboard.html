@@ -1,0 +1,134 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block admin_content %}
+<div class="card shadow-lg border-0">
+    <div class="card-header bg-gradient-primary text-white py-4">
+        <h2 class="mb-0 fw-bold">
+            <i class="fas fa-chart-line me-3"></i>
+            Admin Dashboard
+        </h2>
+    </div>
+    <div class="card-body p-5">
+        <div class="row g-4 mb-5">
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow h-100 text-white bg-primary hover-lift">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Total Users</h6>
+                                <h3 class="mb-0 fw-bold">{{ user_count }}</h3>
+                            </div>
+                            <i class="fas fa-users fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow h-100 text-white bg-success hover-lift">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Pending Users</h6>
+                                <h3 class="mb-0 fw-bold">{{ pending_users }}</h3>
+                            </div>
+                            <i class="fas fa-user-clock fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow h-100 text-white bg-warning hover-lift">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Total Products</h6>
+                                <h3 class="mb-0 fw-bold">{{ product_count }}</h3>
+                            </div>
+                            <i class="fas fa-boxes fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="card border-0 shadow h-100 text-white bg-danger hover-lift">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Pending Orders</h6>
+                                <h3 class="mb-0 fw-bold">{{ pending_orders }}</h3>
+                            </div>
+                            <i class="fas fa-shopping-cart fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Recent Users</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users %}
+                            <tr>
+                                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.is_confirmed %}
+                                        <span class="badge bg-success">Confirmed</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h5>Recent Orders</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Product</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recent_orders %}
+                            <tr>
+                                <td>{{ order.user.first_name }}</td>
+                                <td>{{ order.product.name[:30] }}...</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if order.status == 'confirmed' else 'warning' }}">
+                                        {{ order.status.title() }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

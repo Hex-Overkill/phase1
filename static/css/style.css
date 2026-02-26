@@ -1,0 +1,85 @@
+/* ---------- General Card Styles ---------- */
+.product-card {
+    background: #1a1a2e; /* dark cyberpunk background */
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: #e0e0ff; /* light text for contrast */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.6); /* glowing indigo shadow */
+}
+
+/* ---------- Image ---------- */
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* ---------- Card Text ---------- */
+.product-card .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #b3b3ff; /* subtle indigo highlight */
+}
+
+.product-card .card-text {
+    color: #d0d0ff;
+}
+
+/* ---------- Hover Lift Utility ---------- */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+}
+
+/* ---------- Navbar ---------- */
+.navbar-brand i {
+    margin-right: 8px;
+    color: #667eea; /* cyberpunk blue accent */
+}
+
+/* ---------- Search Results ---------- */
+.search-results {
+    background: linear-gradient(135deg, #1f1f38 0%, #3a0ca3 100%);
+    color: #ffffff;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+}
+
+/* ---------- Responsive Design ---------- */
+@media (max-width: 992px) {
+    .product-card .card-img-top {
+        height: 180px;
+    }
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-card .card-img-top {
+        height: 150px;
+    }
+    .card-body {
+        padding: 0.8rem;
+    }
+    .product-card .card-title {
+        font-size: 0.9rem;
+    }
+}

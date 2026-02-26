@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - E-Shop{% endblock %}
+
+{% block content %}
+<div class="row g-5">
+
+    <!-- Product Images -->
+    <div class="col-lg-6">
+        <div id="productCarousel" class="carousel slide shadow-lg rounded" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% if photos %}
+                    {% for photo in photos %}
+                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                        <img src="{{ url_for('static', filename='uploads/' ~ photo) }}"
+                             class="d-block w-100 img-fluid rounded"
+                             style="height: 450px; object-fit: cover;"
+                             alt="{{ product.name }}" loading="lazy">
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="carousel-item active">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=450&fit=crop"
+                             class="d-block w-100 img-fluid rounded"
+                             style="height: 450px; object-fit: cover;"
+                             alt="{{ product.name }}">
+                    </div>
+                {% endif %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+
+        <!-- Thumbnail Navigation -->
+        {% if photos %}
+        <div class="row g-2 mt-3">
+            {% for photo in photos[:4] %}
+            <div class="col-3">
+                <img src="{{ url_for('static', filename='uploads/' ~ photo) }}"
+                     class="img-thumbnail cursor-pointer"
+                     style="height: 80px; object-fit: cover;"
+                     onclick="changeSlide({{ loop.index0 }})"
+                     alt="Thumbnail">
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Product Details -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-lg h-100 bg-dark">
+            <div class="card-body p-5 text-white">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        {% if product.is_new %}<span class="badge bg-success fs-6 px-3 py-2 mb-2">New Arrival</span>{% endif %}
+                        {% if product.is_hot %}<span class="badge bg-danger fs-6 px-3 py-2 mb-2">🔥 Hot Item</span>{% endif %}
+                        <h1 class="display-5 fw-bold mb-0">{{ product.name }}</h1>
+                        <p class="h3 fw-bold mt-3 mb-0">Le {{ "%.0f"|format(product.price) }}</p>
+                    </div>
+                    <div class="text-end">
+                        <i class="fas fa-heart fa-2x text-danger"></i>
+                    </div>
+                </div>
+
+                <hr class="my-4 border-light">
+
+                <h5><i class="fas fa-info-circle me-2"></i>Description</h5>
+                <p class="lead">{{ product.description }}</p>
+
+                <hr class="my-4 border-light">
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-tag me-2"></i>Category:</h6>
+                        <span class="badge bg-secondary px-3 py-2">{{ product.category.name }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-calendar me-2"></i>Added:</h6>
+                        <span>{{ product.created_at.strftime('%B %d, %Y') }}</span>
+                    </div>
+                </div>
+
+                <a href="{{ url_for('place_order', product_id=product.id) }}"
+                   class="btn btn-success btn-lg w-100 fw-bold py-3 mb-3 text-white">
+                    <i class="fas fa-shopping-cart me-2"></i>Place Order Now
+                </a>
+
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary w-100 py-3 text-white">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Products
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Related Products -->
+<div class="mt-5">
+    <h3 class="mb-4"><i class="fas fa-th-large me-3"></i>More Products You Might Like</h3>
+    <div class="row g-4">
+        {% for related in products[:4] if related.id != product.id %}
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm hover-lift bg-dark text-white">
+                <img src="{{ url_for('static', filename='uploads/' ~ related.thumbnail) if related.thumbnail else 'https://via.placeholder.com/300x200' }}"
+                     class="card-img-top" alt="{{ related.name }}">
+                <div class="card-body">
+                    <h6 class="card-title">{{ related.name }}</h6>
+                    <p class="small">{{ related.description[:50] }}...</p>
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-bold">Le {{ "%.0f"|format(related.price) }}</span>
+                        <a href="{{ url_for('product_detail', product_id=related.id) }}" class="btn btn-sm btn-outline-primary text-white">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeSlide(index) {
+    const carousel = new bootstrap.Carousel(document.getElementById('productCarousel'));
+    carousel.to(index);
+}
+</script>
+{% endblock %}

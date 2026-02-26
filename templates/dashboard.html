@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - E-Shop{% endblock %}
+
+{% block content %}
+{% if unconfirmed %}
+<div class="alert alert-warning cyber-alert">
+    <h5><i class="fas fa-clock"></i> Account Confirmation Pending</h5>
+    <p>Your account has been registered successfully. Please wait for admin approval to access products and place orders.</p>
+</div>
+{% else %}
+
+<!-- Search and Filter -->
+<div class="row mb-4 g-3">
+    <div class="col-md-5">
+        <div class="input-group cyber-input-group">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search products..." value="{{ query }}">
+        </div>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select cyber-select" id="categoryFilter">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+            <option value="{{ category.id }}" {% if category_id|string == category.id|string %}selected{% endif %}>
+                {{ category.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select class="form-select cyber-select" id="sortFilter">
+            <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+            <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+            <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-outline-indigo w-100" onclick="filterProducts()">
+            <i class="fas fa-filter"></i> Filter
+        </button>
+    </div>
+</div>
+
+<!-- Hot Products Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h3 class="cyber-section-title"><i class=""></i> Hot Products</h3>
+    </div>
+    {% for product in products.items %}
+    {% if product.is_hot %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100 shadow-sm product-card cyber-card hover-lift">
+            <img src="{{ url_for('static', filename='uploads/' + (product.thumbnail if product.thumbnail else 'default.jpg')) }}" 
+                 class="card-img-top" alt="{{ product.name }}" loading="lazy">
+            <div class="card-body d-flex flex-column">
+                <h6 class="card-title">{{ product.name }}</h6>
+                <p class="card-text flex-grow-1">{{ product.description[:60] }}...</p>
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                    <span class="fw-bold text-indigo">Le {{ "%.0f"|format(product.price) }}</span>
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-outline-indigo btn-sm">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<!-- Products Grid -->
+<div class="row g-4">
+    {% for product in products.items %}
+    <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="card h-100 product-card cyber-card hover-lift shadow-sm">
+            <img src="{{ url_for('static', filename='uploads/' + (product.thumbnail if product.thumbnail else 'default.jpg')) }}" 
+                 class="card-img-top" alt="{{ product.name }}" loading="lazy">
+            <div class="card-body d-flex flex-column">
+                <h6 class="card-title">{{ product.name }}</h6>
+                <p class="card-text flex-grow-1">{{ product.description[:80] }}...</p>
+                <div class="mt-auto">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold h5 text-indigo">Le {{ "%.0f"|format(product.price) }}</span>
+                        {% if product.is_new %}<span class="badge cyber-badge bg-green">New</span>{% endif %}
+                        {% if product.is_hot %}<span class="badge cyber-badge bg-red">Hot</span>{% endif %}
+                    </div>
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-indigo w-100 mb-2">View Details</a>
+                    <a href="{{ url_for('place_order', product_id=product.id) }}" class="btn btn-cyan w-100">Place Order</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+<div class="d-flex justify-content-between mt-4">
+    {% if products.has_prev %}
+    <a href="?page={{ products.prev_num }}&q={{ query }}&category={{ category_id }}&sort={{ sort }}" class="btn btn-outline-indigo">Previous</a>
+    {% else %}
+    <span></span>
+    {% endif %}
+
+    {% if products.has_next %}
+    <a href="?page={{ products.next_num }}&q={{ query }}&category={{ category_id }}&sort={{ sort }}" class="btn btn-outline-indigo">Next</a>
+    {% else %}
+    <span></span>
+    {% endif %}
+</div>
+
+{% endif %}
+
+<!-- JS Filter Script -->
+<script>
+function filterProducts() {
+    const q = document.getElementById('searchInput').value;
+    const category = document.getElementById('categoryFilter').value;
+    const sort = document.getElementById('sortFilter').value;
+
+    const params = new URLSearchParams();
+    if(q) params.set('q', q);
+    if(category) params.set('category', category);
+    if(sort) params.set('sort', sort);
+
+    window.location.href = '?' + params.toString();
+}
+</script>
+
+<!-- --------- Cyberpunk Styles --------- -->
+<style>
+/* ---------- Alerts ---------- */
+.cyber-alert {
+    background: linear-gradient(135deg, #764ba2, #667eea);
+    color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(102,126,234,0.5);
+}
+
+/* ---------- Search & Filters ---------- */
+.cyber-input-group .form-control,
+.cyber-select {
+    background-color: #1a1a2e;
+    border: 1px solid #667eea;
+    color: #d0d0ff;
+}
+
+.cyber-input-group .input-group-text {
+    background-color: #2a1a4d;
+    border: 1px solid #667eea;
+    color: #b3b3ff;
+}
+
+.cyber-select option {
+    background-color: #1a1a2e;
+    color: #d0d0ff;
+}
+
+/* ---------- Buttons ---------- */
+.btn-indigo {
+    background-color: #667eea;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+.btn-indigo:hover { background-color: #5566cc; }
+
+.btn-cyan {
+    background-color: #2dd4f7;
+    color: #0f0f24;
+}
+.btn-cyan:hover { background-color: #1bbfd9; }
+
+.btn-outline-indigo {
+    border-color: #667eea;
+    color: #667eea;
+}
+.btn-outline-indigo:hover {
+    background-color: #667eea;
+    color: #fff;
+}
+
+/* ---------- Cards ---------- */
+.cyber-card {
+    background-color: #1a1a2e;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: #d0d0ff;
+}
+.cyber-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(102,126,234,0.6);
+}
+
+/* ---------- Product Titles ---------- */
+.card-title { color: #b3b3ff; }
+
+/* ---------- Badges ---------- */
+.cyber-badge {
+    border-radius: 8px;
+    padding: 0.2em 0.5em;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.bg-red { background-color: #f87171; color: #0f0f24; }
+.bg-green { background-color: #2dd4f7; color: #0f0f24; }
+
+/* ---------- Section Titles ---------- */
+.cyber-section-title { color: #b3b3ff; margin-bottom: 1rem; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 992px) {
+    .card-body { padding: 1.2rem; }
+}
+@media (max-width: 576px) {
+    .card-body { padding: 0.8rem; }
+    .card-title { font-size: 0.9rem; }
+}
+</style>
+
+{% endblock %}
