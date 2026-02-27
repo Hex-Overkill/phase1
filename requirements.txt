@@ -1,4 +1,4 @@
-Flask==
+Flask
 Flask-SQLAlchemy
 Flask-Login
 Werkzeug
@@ -6,3 +6,4 @@ Pillow
 WTForms
 
 email-validator
+
