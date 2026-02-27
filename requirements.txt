@@ -4,6 +4,6 @@ Flask-Login
 Werkzeug
 Pillow
 WTForms
-
 email-validator
+
 
